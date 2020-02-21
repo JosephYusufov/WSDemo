@@ -7,12 +7,12 @@ import websockets
 
 async def hello(websocket, path):
     name = await websocket.recv()
-    print(f"< {name}")
+    print("< {}".format(name))
 
-    greeting = f"Hello {name}!"
+    greeting = "Hello {}!".format(name)
 
     await websocket.send(greeting)
-    print(f"> {greeting}")
+    print("> {}".format(greeting))
 
 start_server = websockets.serve(hello, "localhost", 8765)
 
