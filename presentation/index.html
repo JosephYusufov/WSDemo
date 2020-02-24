@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebSocket demo</title>
+    <style type="text/css">
+      body {
+          font-family: "Courier New", sans-serif;
+          text-align: center;
+      }
+      .buttons {
+          font-size: 4em;
+          display: flex;
+          justify-content: center;
+      }
+      .button, .value {
+          line-height: 1;
+          padding: 2rem;
+          margin: 2rem;
+          border: medium solid;
+          min-height: 1em;
+          min-width: 1em;
+      }
+      .button {
+          cursor: pointer;
+          user-select: none;
+      }
+      .minus {
+          color: red;
+      }
+      .plus {
+          color: green;
+      }
+      .value {
+          min-width: 2em;
+      }
+      .state {
+          font-size: 2em;
+          margin: 10px 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="buttons">
+      <!-- <div class="minus button">-</div> -->
+      <div class="value">?</div>      
+      <!-- <div class="plus button">+</div> -->
+    </div>
+    <input name="input" type="text" id="input"/> <button id="update">Update</button>
+    <div class="state">
+      <span class="users">?</span> online
+    </div>
+    <script>
+      var users = document.querySelector('.users'),          
+          value = document.querySelector('.value'),          
+          update = document.querySelector('#update'),
+          input = document.querySelector('#input'),
+          websocket = new WebSocket("ws://127.0.0.1:6789/");
+          // minus = document.querySelector('.minus'),
+          // plus = document.querySelector('.plus'),
+      // minus.onclick = function (event) {
+      //     websocket.send(JSON.stringify({action: 'minus'}));
+      // }
+      // plus.onclick = function (event) {
+      //     websocket.send(JSON.stringify({action: 'plus'}));
+      // }
+      console.log(update)
+      update.onclick = function (event) {
+          console.log("updated")
+          var input_text = input.value;
+          console.log(input_text)
+          websocket.send(JSON.stringify({action: input_text}));
+      }
+      websocket.onmessage = function (event) {
+          data = JSON.parse(event.data);
+          switch (data.type) {
+          case 'state':
+              value.textContent = data.value;
+              break;
+          case 'users':
+              users.textContent = (
+                  data.count.toString() + " user" +
+                      (data.count == 1 ? "" : "s"));
+              break;
+          default:
+              console.error(
+                  "unsupported event", data);
+          }
+      };
+    </script>
+  </body>
+</html>
